@@ -12,6 +12,8 @@ import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
 
+import com.example.samsungproject.gamepanel.Joystick;
+
 
 public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
