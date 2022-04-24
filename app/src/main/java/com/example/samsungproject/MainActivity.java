@@ -3,34 +3,16 @@ package com.example.samsungproject;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-<<<<<<< HEAD
-
-public class MainActivity extends AppCompatActivity {
-
-=======
 import android.util.Log;
 
 
 public class MainActivity extends AppCompatActivity {
 
     private Game game;
->>>>>>> dima
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-<<<<<<< HEAD
-        setContentView(new Game(this));
-
-        //but = findViewById(R.id.buttt);
-
-//        but.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(getApplicationContext(), "Зачем вы нажали?", Toast.LENGTH_SHORT).show();
-//            }
-//        });
-=======
         game = new Game(this);
         setContentView(game);
         Log.d("dd", "ddd");
@@ -65,6 +47,5 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         //super.onBackPressed();
->>>>>>> dima
     }
 }

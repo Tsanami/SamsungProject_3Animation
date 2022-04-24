@@ -12,13 +12,8 @@
         <activity
             android:name=".MainActivity"
             android:exported="true"
-<<<<<<< HEAD
-            android:screenOrientation="landscape"
-           >
-=======
             android:screenOrientation="landscape">
 
->>>>>>> dima
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -28,4 +23,3 @@
     </application>
 
 </manifest>
-
