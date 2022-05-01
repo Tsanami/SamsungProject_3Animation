@@ -13,6 +13,7 @@ public class GameMap {
 
     int mapArray[][];
     Bitmap textures[];
+    boolean isFirstDraw = true;
 
     public GameMap(int width, int height, Resources resources){
         Random random = new Random();
@@ -36,15 +37,19 @@ public class GameMap {
     }
 
     public void draw(Canvas canvas){
-        float x = 0, y = 0;
-        Paint paint = new Paint();
-        for (int i = 0; i < mapArray.length; i++) {
-            for (int j = 0; j < mapArray[i].length; j++) {
-                canvas.drawBitmap(textures[mapArray[i][j]], x, y, paint);
-                x += sizeTexture;
-            }
-            y += sizeTexture;
-            x = 0;
+        if (isFirstDraw){
+            float x = 0, y = 0;
+            Paint paint = new Paint();
+            for (int i = 0; i < mapArray.length; i++) {
+                for (int j = 0; j < mapArray[i].length; j++) {
+                    canvas.drawBitmap(textures[mapArray[i][j]], x, y, paint);
+                    x += sizeTexture;
+                }
+                y += sizeTexture;
+                x = 0;
+                isFirstDraw = false;
+        }
+
         }
         //changeMap();
     }

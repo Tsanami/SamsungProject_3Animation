@@ -4,7 +4,7 @@ import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 
 public class GameLoop extends Thread{
-    private static final int MAX_UPS = 60;
+    protected static final int MAX_UPS = 60;
     private boolean isRunning = false;
     private SurfaceHolder surfaceHolder;
     private Game game;
@@ -97,5 +97,15 @@ public class GameLoop extends Thread{
 
     public void setRunning(boolean b) {
         isRunning = b;
+    }
+
+    public void stopLoop() {
+        isRunning = false;
+        try{
+            join();
+        }
+        catch (InterruptedException e){
+            e.printStackTrace();
+        }
     }
 }
