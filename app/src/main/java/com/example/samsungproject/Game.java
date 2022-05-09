@@ -10,11 +10,8 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.SurfaceHolder;
+import com.example.samsungproject.gameobjects.Joystick;
 
-import com.example.samsungproject.gamepanel.Joystick;
-import com.example.samsungproject.gamepanel.Perfomance;
-import com.example.samsungproject.graphics.Animator;
-import com.example.samsungproject.graphics.SpriteSheet;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,9 +32,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private List<Spell> spellList = new ArrayList<Spell>();
     private int numberOfSpellsToCast = 0;
     private float touchX, touchY;
-    private Perfomance perfomance;
-    private GameDisplay gameDisplay;
-
 
     public Game(Context context) {
         super(context);
@@ -46,7 +40,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         SurfaceHolder surfaceHolder = getHolder();
         surfaceHolder.addCallback(this);
-        perfomance = new Perfomance(context, gameLoop);
+
         this.context = context;
         gameLoop = new GameLoop(this, surfaceHolder);
 
@@ -86,25 +80,22 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             ws = getWidth();
             joystickWalk = new Joystick(275, 660, 140, 80);
             joystickGun = new Joystick(1550, 660, 140, 80);
-            SpriteSheet spriteSheet = new SpriteSheet(context);
-            Animator animator = new Animator(spriteSheet.getPlayerSpriteArray());
-            player = new Player(context,ws / 2, (hs/2)+120, joystickWalk, animator);
+            player = new Player(context,ws / 2, (hs/2)+120, joystickWalk);
             isFirstDraw = false;
             DisplayMetrics displayMetrics = new DisplayMetrics();
             ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-            gameDisplay = new GameDisplay(displayMetrics.widthPixels, displayMetrics.heightPixels, player);
         }
 
         //gameMap.draw(canvas); // Рисовать карту
 
-        player.draw(canvas, gameDisplay); // Рисовать игрока
+        player.draw(canvas); // Рисовать игрока
 
         for (Spell spell: spellList) {
-            spell.draw(canvas, gameDisplay);
+            spell.draw(canvas);
         }
         joystickWalk.draw(canvas); // Рисовать джойстик для ходьбы
         joystickGun.draw(canvas); // Рисовать джойстик для пушки
-        perfomance.draw(canvas);
+
         update();
     }
 
@@ -123,11 +114,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         for (Spell spell: spellList) {
             spell.update();
         }
-        gameDisplay.update();
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        int pointerCount = event.getPointerCount()-1;
+
         switch(event.getActionMasked()) {
             case MotionEvent.ACTION_POINTER_DOWN:
                 if (player.jumpIsPressed(event.getX(1), event.getY(1)))
@@ -156,8 +148,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 }
                 else if (joystickWalk.isPressed(event.getX(), event.getY())){
                     joystickWalk.setIsPressed(true);
+                    if (joystickWalk.getIsPressed() && !joystickGun.isFirst())
+                        joystickWalk.setIsFirst(true);
                 }else if (joystickGun.isPressed(event.getX(), event.getY())){
                     joystickGun.setIsPressed(true);
+                    if (joystickGun.getIsPressed() && !joystickWalk.isFirst())
+                        joystickGun.setIsFirst(true);
                 }
                 else if (!player.isJump){
                     touchX = event.getX();
@@ -167,45 +163,52 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (joystickWalk.getIsPressed() && (joystickWalk.isPressed(event.getX(), event.getY()))){
-                    joystickWalk.setActuator(event.getX(), event.getY());
+                if (joystickGun.getIsPressed() && joystickGun.isFirst()){
+                    if (pointerCount==0)
+                        moveGunJk(0, joystickGun.getIsPressed(), event);
+                    else if (joystickWalk.getIsPressed()){
+                        moveGunJk(0, joystickGun.getIsPressed(), event);
+                        moveWalkJk(1, joystickWalk.getIsPressed(), event);
+                    }
                 }
-//                if (joystickGun.getIsPressed() && (joystickGun.isPressed(event.getX(0), event.getY(0)))){
-//                    joystickGun.setActuator(event.getX(), event.getY());
-//                }
-//                if (event.getPointerId(1) == 1){
-//                    Log.d("2nd joystick move ", "moved");
-//                    if (joystickGun.getIsPressed()){
-//                        joystickGun.setActuator(event.getX(1), event.getY(1));
-//                    }
-//                }
-                Log.d("PointerCount ", String.valueOf(event.getPointerCount()));
-                whichJoystick(event.getPointerCount()-1, joystickGun.getIsPressed(), event);
-
+                else if (joystickWalk.getIsPressed() && joystickWalk.isFirst()){
+                    if (pointerCount==0)
+                        moveWalkJk(0, joystickWalk.getIsPressed(), event);
+                    else if (joystickWalk.getIsPressed()){
+                        moveWalkJk(0, joystickWalk.getIsPressed(), event);
+                        moveGunJk(1, joystickGun.getIsPressed(), event);
+                    }
+                }
                 break;
             case MotionEvent.ACTION_UP:
-                if (joystickWalk.getIsPressed()) {
+                if (joystickGun.getIsPressed() && joystickGun.isFirst()){
+                    if (pointerCount==0) {
+                        joystickGun.setIsPressed(false);
+                        joystickGun.resetCtrlCoef();
+                        joystickGun.setIsFirst(false);
+                        break;
+                    }
+                }
+                if (joystickWalk.getIsPressed() && !joystickWalk.isPressed(touchX, touchY)) {
                     joystickWalk.setIsPressed(false);
-                    joystickWalk.resetActuator();
-                    break;
-                }
-                if (joystickGun.getIsPressed()) {
-                    joystickGun.setIsPressed(false);
-                    joystickGun.resetActuator();
+                    joystickWalk.resetCtrlCoef();
+                    joystickWalk.setIsFirst(false);
                     break;
                 }
                 break;
-            case MotionEvent.ACTION_POINTER_1_UP:
-                joystickGun.setIsPressed(false);
-                joystickGun.resetActuator();
-                break;
+
         }
         return true;
     }
 
-    public void whichJoystick(int pointerId, boolean isPressed, MotionEvent e){
+
+    public void moveGunJk(int pointerId, boolean isPressed, MotionEvent e){
         if (isPressed)
-            joystickGun.setActuator(e.getX(pointerId), e.getY(pointerId));
+            joystickGun.setCtrlCoef(e.getX(pointerId), e.getY(pointerId));
+    }
+    public void moveWalkJk(int pointerId, boolean isPressed, MotionEvent e){
+        if (isPressed)
+            joystickWalk.setCtrlCoef(e.getX(pointerId), e.getY(pointerId));
     }
     public void pause() {
         gameLoop.stopLoop();

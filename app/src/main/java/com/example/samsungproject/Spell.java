@@ -21,8 +21,8 @@ public class Spell extends Circle {
     }
 
     @Override
-    public void draw(Canvas canvas, GameDisplay gameDisplay) {
-        canvas.drawCircle(gameDisplay.gameToDisplayCoordinatesX(posX+35), gameDisplay.gameToDisplayCoordinatesY(posY+20),  radius, paint);
+    public void draw(Canvas canvas) {
+        canvas.drawCircle(posX+35, posY+20,  radius, paint);
     }
 
     @Override

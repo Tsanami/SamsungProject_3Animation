@@ -1,10 +1,6 @@
 package com.example.samsungproject.gameobjects;
 
-import android.content.Context;
 import android.graphics.Canvas;
-
-import com.example.samsungproject.GameDisplay;
-import com.example.samsungproject.gamepanel.Joystick;
 
 public abstract class GameObject {
     protected float posX;
@@ -17,7 +13,7 @@ public abstract class GameObject {
         this.posY = posY;
     }
 
-    public abstract void draw(Canvas canvas, GameDisplay gameDisplay);
+    public abstract void draw(Canvas canvas);
     public abstract void update();
 
     public float getPosX(){ return 0; }

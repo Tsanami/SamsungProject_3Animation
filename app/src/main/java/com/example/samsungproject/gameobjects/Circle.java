@@ -4,8 +4,6 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
-import com.example.samsungproject.GameDisplay;
-
 public abstract class Circle extends GameObject{
 
     protected float radius;
@@ -20,11 +18,7 @@ public abstract class Circle extends GameObject{
         paint.setColor(color);
     }
 
-    public void draw(Canvas canvas, GameDisplay gameDisplay){
-        canvas.drawCircle(
-                gameDisplay.gameToDisplayCoordinatesX(posX),
-                gameDisplay.gameToDisplayCoordinatesY(posY),
-                radius,
-                paint);
+    public void draw(Canvas canvas){
+        canvas.drawCircle(posX, posY, radius, paint);
     }
 }

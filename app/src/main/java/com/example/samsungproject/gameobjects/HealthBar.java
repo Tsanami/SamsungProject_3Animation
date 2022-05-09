@@ -1,4 +1,4 @@
-package com.example.samsungproject.gamepanel;
+package com.example.samsungproject.gameobjects;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -6,7 +6,6 @@ import android.graphics.Paint;
 
 import androidx.core.content.ContextCompat;
 
-import com.example.samsungproject.GameDisplay;
 import com.example.samsungproject.Player;
 import com.example.samsungproject.R;
 

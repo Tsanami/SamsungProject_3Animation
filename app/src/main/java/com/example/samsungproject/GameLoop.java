@@ -8,21 +8,11 @@ public class GameLoop extends Thread{
     private boolean isRunning = false;
     private SurfaceHolder surfaceHolder;
     private Game game;
-    private double averageUPS;
-    private double averageFPS;
     private final double UPS_PERIOD = 1E+3/MAX_UPS;
 
     public GameLoop(Game game, SurfaceHolder surfaceHolder) {
         this.game = game;
         this.surfaceHolder = surfaceHolder;
-    }
-
-    public double getAverageUPS() {
-        return (int)averageUPS;
-    }
-
-    public double getAverageFPS() {
-        return (int)averageFPS;
     }
 
     public long startTime, elapsedTime, sleepTime;
@@ -37,8 +27,6 @@ public class GameLoop extends Thread{
 
         int updateCount = 0;
         int frameCount = 0;
-
-
 
         Canvas canvas = null;
         startTime = System.currentTimeMillis();
@@ -86,8 +74,6 @@ public class GameLoop extends Thread{
 
             elapsedTime = System.currentTimeMillis() - startTime;
             if (elapsedTime >= 1000) {
-                averageUPS = updateCount / (1E-3 * elapsedTime);
-                averageFPS = frameCount / (1E-3 * elapsedTime);
                 updateCount = 0;
                 frameCount = 0;
                 startTime = System.currentTimeMillis();

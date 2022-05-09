@@ -8,11 +8,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import com.example.samsungproject.gameobjects.GameObject;
-import com.example.samsungproject.gameobjects.PlayerState;
-import com.example.samsungproject.gamepanel.HealthBar;
-import com.example.samsungproject.gamepanel.Joystick;
-import com.example.samsungproject.graphics.Animator;
-import com.example.samsungproject.graphics.Sprite;
+import com.example.samsungproject.gameobjects.HealthBar;
+import com.example.samsungproject.gameobjects.Joystick;
 
 public class Player extends GameObject{
 
@@ -31,19 +28,17 @@ public class Player extends GameObject{
     private int hp;
     Joystick joystick;
     private Animator animator;
-    private PlayerState playerState;
 
 
-    public Player(Context context, float x, float y, Joystick joystick, Animator animator){
+    public Player(Context context, float x, float y, Joystick joystick){
         super(x,y);
         this.x = x;
         this.y = y;
         this.joystick = joystick;
         jumpBtPaint.setColor(Color.GRAY);
-        this.animator = animator;
+        animator = new Animator(context, this);
         this.healthBar = new HealthBar(context, this );
         this.hp = MAX_HP;
-        this.playerState = new PlayerState(this);
     }
 
 
@@ -71,18 +66,18 @@ public class Player extends GameObject{
     }
 
 
-    public void draw(Canvas canvas, GameDisplay gameDisplay) {
-        animator.draw(canvas, gameDisplay, this);
+    public void draw(Canvas canvas) {
+        animator.draw(canvas);
         canvas.drawCircle(jumpX, jumpY, jumpRadius, jumpBtPaint);
         healthBar.draw(canvas, healthBar);
     }
 
     public void update() {
-        velX = (float)joystick.getActuatorX() * k;
+        velX = (float)joystick.ctrlCoefX * k;
         //dy = (float)joystick.getActuatorY() * k;
         x += velX;
         //y += dy;
-        playerState.update();
+
     }
 
     public boolean jumpIsPressed(double jTX, double jTY) { // jTX - jumpTouchY
@@ -90,10 +85,10 @@ public class Player extends GameObject{
         return isPressed < jumpRadius;
     }
 
+
     public int getHP() {
         return hp;
     }
-
     public float getPosX() {
         return x;
     }
@@ -101,5 +96,6 @@ public class Player extends GameObject{
         return y;
     }
     public float getVelX() { return velX; }
-    public PlayerState getPlayerState() { return playerState; }
+    public float getVelY() { return velY; }
+
 }
