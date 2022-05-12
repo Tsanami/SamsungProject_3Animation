@@ -24,8 +24,6 @@ public class Player extends GameObject{
     float hi, wi;//ширина и высота изображения
     Paint paint;
     Paint jumpBtPaint = new Paint();
-    private HealthBar healthBar;
-    private int hp;
     Joystick joystick;
     private Animator animator;
 
@@ -37,8 +35,6 @@ public class Player extends GameObject{
         this.joystick = joystick;
         jumpBtPaint.setColor(Color.GRAY);
         animator = new Animator(context, this);
-        this.healthBar = new HealthBar(context, this );
-        this.hp = MAX_HP;
     }
 
 
@@ -69,7 +65,6 @@ public class Player extends GameObject{
     public void draw(Canvas canvas) {
         animator.draw(canvas);
         canvas.drawCircle(jumpX, jumpY, jumpRadius, jumpBtPaint);
-        healthBar.draw(canvas, healthBar);
     }
 
     public void update() {
@@ -84,11 +79,7 @@ public class Player extends GameObject{
         double isPressed = Math.sqrt(Math.pow(jumpX - jTX, 2) + Math.pow(jumpY - jTY, 2));
         return isPressed < jumpRadius;
     }
-
-
-    public int getHP() {
-        return hp;
-    }
+    
     public float getPosX() {
         return x;
     }
