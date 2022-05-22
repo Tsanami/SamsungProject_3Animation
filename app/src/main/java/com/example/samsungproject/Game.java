@@ -135,7 +135,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 if (joystickGun.isPressed(event.getX(1), event.getY(1))) {
                     joystickGun.setIsPressed(true);
                 }
-                //joystickGun.setIsPressed(true);
                 break;
             case MotionEvent.ACTION_DOWN:
                 if (player.jumpIsPressed(event.getX(), event.getY())) player.isJump = true;
@@ -183,16 +182,12 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             case MotionEvent.ACTION_UP:
                 if (joystickGun.getIsPressed() && joystickGun.isFirst()){
                     if (pointerCount==0) {
-                        joystickGun.setIsPressed(false);
-                        joystickGun.resetCtrlCoef();
-                        joystickGun.setIsFirst(false);
+                        joystickGun.clear();
                         break;
                     }
                 }
                 if (joystickWalk.getIsPressed() && !joystickWalk.isPressed(touchX, touchY)) {
-                    joystickWalk.setIsPressed(false);
-                    joystickWalk.resetCtrlCoef();
-                    joystickWalk.setIsFirst(false);
+                    joystickWalk.clear();
                     break;
                 }
                 break;

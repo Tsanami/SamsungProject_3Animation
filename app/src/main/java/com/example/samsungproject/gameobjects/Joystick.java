@@ -108,4 +108,9 @@ public class Joystick {
     public boolean isFirst() {
         return isFirst;
     }
+    public void clear(){
+        resetCtrlCoef();
+        setIsFirst(false);
+        setIsPressed(false);
+    }
 }

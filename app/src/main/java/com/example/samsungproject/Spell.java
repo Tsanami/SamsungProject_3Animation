@@ -3,32 +3,37 @@ package com.example.samsungproject;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 
 import androidx.core.content.ContextCompat;
 
 import com.example.samsungproject.gameobjects.Circle;
+import com.example.samsungproject.gameobjects.GameObject;
 
-public class Spell extends Circle {
+public class Spell{
 
+    private final float radius;
+    private Paint paint;
+    private float x;
+    private float y;
+    private float velX;
+    private float velY;
     public Spell(Context context, Player player, float tX, float tY ) {
-        super(context,
-                ContextCompat.getColor(context, R.color.white),
-                player.x, player.y,
-                25);
+        this.x = player.x;
+        this.y = player.y;
+        this.radius = 25;
+        this.paint = new Paint();
+        paint.setColor(ContextCompat.getColor(context, R.color.white));
         double ro = Math.sqrt((Math.abs(tX)- Math.abs(player.x))*(Math.abs(tX)- Math.abs(player.x))+(tY- player.y)*(tY- player.y));
-        velX = (float) (20 * (Math.abs(tX) - Math.abs(player.x))/ro);
-        velY = (float) (20 * (tY - player.y)/ro);
+        this.velX = (float) (20 * (Math.abs(tX) - Math.abs(player.x))/ro);
+        this.velY = (float) (20 * (tY - player.y)/ro);
     }
-
-    @Override
     public void draw(Canvas canvas) {
-        canvas.drawCircle(posX+35, posY+20,  radius, paint);
+        canvas.drawCircle(x+35, y+20, radius, paint);
     }
-
-    @Override
     public void update() {
-        posX += velX;
-        posY += velY;
+        x += velX;
+        y += velY;
     }
 
 

@@ -20,13 +20,12 @@ public class GameLoop extends Thread{
         isRunning = true;
         start();
     }
-
+     
     @Override
     public void run() {
         super.run();
 
         int updateCount = 0;
-        int frameCount = 0;
 
         Canvas canvas = null;
         startTime = System.currentTimeMillis();
@@ -46,7 +45,6 @@ public class GameLoop extends Thread{
                 if (canvas != null){
                     try {
                         surfaceHolder.unlockCanvasAndPost(canvas);
-                        frameCount++;
                     }
                     catch (Exception e){
                         e.printStackTrace();
@@ -75,7 +73,7 @@ public class GameLoop extends Thread{
             elapsedTime = System.currentTimeMillis() - startTime;
             if (elapsedTime >= 1000) {
                 updateCount = 0;
-                frameCount = 0;
+
                 startTime = System.currentTimeMillis();
             }
         }
