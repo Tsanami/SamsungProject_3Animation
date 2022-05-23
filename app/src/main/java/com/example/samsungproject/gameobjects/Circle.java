@@ -21,4 +21,8 @@ public abstract class Circle extends GameObject{
     public void draw(Canvas canvas){
         canvas.drawCircle(posX, posY, radius, paint);
     }
+
+    protected float getRadius(Circle cirlce) {
+        return 0;
+    }
 }

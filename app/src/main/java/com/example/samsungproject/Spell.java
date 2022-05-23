@@ -7,9 +7,6 @@ import android.graphics.Paint;
 
 import androidx.core.content.ContextCompat;
 
-import com.example.samsungproject.gameobjects.Circle;
-import com.example.samsungproject.gameobjects.GameObject;
-
 public class Spell{
 
     private final float radius;
@@ -36,5 +33,15 @@ public class Spell{
         y += velY;
     }
 
+    public float getRadius() {
+        return radius;
+    }
 
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
+    }
 }

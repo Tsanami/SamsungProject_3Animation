@@ -8,12 +8,13 @@ import android.graphics.Paint;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.SurfaceView;
 import android.view.SurfaceHolder;
+import android.view.SurfaceView;
+
 import com.example.samsungproject.gameobjects.Joystick;
 
-
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 
@@ -30,6 +31,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     boolean isFirstDraw = true;
     GameMap gameMap;
     private List<Spell> spellList = new ArrayList<Spell>();
+    private List<Enemy> enemyList = new ArrayList<>();
     private int numberOfSpellsToCast = 0;
     private float touchX, touchY;
 
@@ -93,6 +95,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         for (Spell spell: spellList) {
             spell.draw(canvas);
         }
+        for (Enemy enemy: enemyList){
+            enemy.draw(canvas);
+        }
         joystickWalk.draw(canvas); // Рисовать джойстик для ходьбы
         joystickGun.draw(canvas); // Рисовать джойстик для пушки
 
@@ -111,9 +116,33 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             numberOfSpellsToCast--;
         }
 
+        if (Enemy.readyToSpawn()){
+            enemyList.add(new Enemy(getContext(), player));
+        }
+        for (Enemy enemy: enemyList) {
+            enemy.update();
+        }
+        Iterator<Enemy> enemyIterator = enemyList.iterator();
+        while (enemyIterator.hasNext()){
+            Enemy enemy = enemyIterator.next();
+            if (Enemy.isColliding(enemy, player)){
+                enemyIterator.remove();
+                continue;
+            }
+            Iterator<Spell> spellIterator = spellList.iterator();
+            while (spellIterator.hasNext()){
+                Spell spell = spellIterator.next();
+                if (Enemy.isSpellColliding(enemy, spell)){
+                    spellIterator.remove();
+                    enemyIterator.remove();
+                    break;
+                }
+            }
+        }
         for (Spell spell: spellList) {
             spell.update();
         }
+
     }
 
     @Override
