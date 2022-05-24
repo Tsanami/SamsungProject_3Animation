@@ -53,7 +53,7 @@ public class Enemy extends Circle {
     }
     public static double getDistanceSpellObjects(Enemy enemy, Spell spell){
         return Math.sqrt(Math.pow((spell.getX() - enemy.getPosX()), 2) +
-                Math.pow((spell.getX() - enemy.getPosY()), 2));
+                Math.pow((spell.getY() - enemy.getPosY()), 2));
     }
 
     public static boolean isColliding(Enemy enemy, Player player) {
@@ -69,7 +69,7 @@ public class Enemy extends Circle {
     public static boolean isSpellColliding(Enemy enemy, Spell spell) {
         float distance = (float)getDistanceSpellObjects(enemy, spell);
         Log.d("spelldist", String.valueOf(distance));
-        float distanceToCollision = enemy.getRadius(enemy);
+        float distanceToCollision = 100;
         Log.d("adad",String.valueOf(distanceToCollision));
         if (distance < distanceToCollision) return true;
         else return false;
