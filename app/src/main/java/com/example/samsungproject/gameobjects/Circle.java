@@ -23,6 +23,6 @@ public abstract class Circle extends GameObject{
     }
 
     protected float getRadius(Circle cirlce) {
-        return 0;
+        return radius;
     }
 }

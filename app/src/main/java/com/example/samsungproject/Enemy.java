@@ -1,10 +1,12 @@
 package com.example.samsungproject;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.core.content.ContextCompat;
 
 import com.example.samsungproject.gameobjects.Circle;
+import com.example.samsungproject.gameobjects.GameObject;
 
 public class Enemy extends Circle {
     private static final float SPEED_PIXELS_PER_SECOND = 600f/5f;
@@ -45,21 +47,30 @@ public class Enemy extends Circle {
 //        return eY;
 //    }
 
-    public static double getDistanceBetweenObjects(Enemy enemy, Spell spell){
+    public static double getDistanceBetweenObjects(Enemy enemy, GameObject gameObject){
+        return Math.sqrt(Math.pow((gameObject.getPosX() - enemy.getPosX()), 2) +
+                Math.pow((gameObject.getPosY() - enemy.getPosY()), 2));
+    }
+    public static double getDistanceSpellObjects(Enemy enemy, Spell spell){
         return Math.sqrt(Math.pow((spell.getX() - enemy.getPosX()), 2) +
-                Math.pow((spell.getY() - enemy.getPosY()), 2));
+                Math.pow((spell.getX() - enemy.getPosY()), 2));
     }
 
     public static boolean isColliding(Enemy enemy, Player player) {
-        float distance = (float)Math.sqrt(Math.pow((player.getPosX() - enemy.getPosX()), 2) + Math.pow((player.getPosY() - enemy.getPosY()), 2));
+//        float distance = (float)Math.sqrt(Math.pow((player.getPosX() - enemy.getPosX()), 2) + Math.pow((player.getPosY() - enemy.getPosY()), 2));
+        float distance = (float)getDistanceBetweenObjects(enemy, player);
+        Log.d("distance", String.valueOf(distance));
         float distanceToCollision = enemy.getRadius(enemy);
+        Log.d("coldist", String.valueOf(distanceToCollision));
         if (distance < distanceToCollision) return true;
         else return false;
     }
 
     public static boolean isSpellColliding(Enemy enemy, Spell spell) {
-        float distance = (float)getDistanceBetweenObjects(enemy, spell);
-        float distanceToCollision = enemy.getRadius(enemy) + spell.getRadius();
+        float distance = (float)getDistanceSpellObjects(enemy, spell);
+        Log.d("spelldist", String.valueOf(distance));
+        float distanceToCollision = enemy.getRadius(enemy);
+        Log.d("adad",String.valueOf(distanceToCollision));
         if (distance < distanceToCollision) return true;
         else return false;
     }

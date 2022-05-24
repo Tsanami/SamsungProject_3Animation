@@ -13,6 +13,6 @@ public abstract class GameObject {
     }
     public abstract void draw(Canvas canvas);
     public abstract void update();
-    public float getPosX(){ return 0; }
-    public float getPosY(){ return 0; }
+    public float getPosX(){ return posX; }
+    public float getPosY(){ return posY; }
 }
