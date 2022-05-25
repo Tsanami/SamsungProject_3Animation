@@ -24,6 +24,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private Joystick joystickWalk; // Джойстик для ходьбы
     private Joystick joystickGun; // Джойстик для оружия
     private Player player; // Игрок
+    Countable countable;
     Paint paint;
     public static Resources res;
     GameLoop gameLoop;
@@ -34,6 +35,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private List<Enemy> enemyList = new ArrayList<>();
     private int numberOfSpellsToCast = 0;
     private float touchX, touchY;
+    int coins=1;
+    int score=1;
 
     public Game(Context context) {
         super(context);
@@ -80,6 +83,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         if(isFirstDraw){
             hs = getHeight();
             ws = getWidth();
+            countable = new Countable();
             joystickWalk = new Joystick(275, 660, 140, 80);
             joystickGun = new Joystick(1550, 660, 140, 80);
             player = new Player(context,ws / 2, (hs/2)+120, joystickWalk);
@@ -89,6 +93,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         //gameMap.draw(canvas); // Рисовать карту
+        countable.drawCoins(canvas);
+        countable.drawScore(canvas);
 
         player.draw(canvas); // Рисовать игрока
 
@@ -100,6 +106,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         }
         joystickWalk.draw(canvas); // Рисовать джойстик для ходьбы
         joystickGun.draw(canvas); // Рисовать джойстик для пушки
+
 
         update();
     }
@@ -133,6 +140,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             while (spellIterator.hasNext()){
                 Spell spell = spellIterator.next();
                 if (Enemy.isSpellColliding(enemy, spell)){
+                    countable.setCoins(coins);
+                    countable.setScore(score);
+                    Log.d("aaaa", "dadada");
                     spellIterator.remove();
                     enemyIterator.remove();
                     break;
@@ -237,4 +247,5 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public void pause() {
         gameLoop.stopLoop();
     }
+
 }
