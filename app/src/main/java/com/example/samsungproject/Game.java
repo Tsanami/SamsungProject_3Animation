@@ -25,13 +25,13 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private Joystick joystickGun; // Джойстик для оружия
     private Player player; // Игрок
     Countable countable;
-    boolean menuPress;
     Shop shop;
     Paint paint;
     public static Resources res;
     GameLoop gameLoop;
     int hs, ws;//ширина и высота области рисования
     boolean isFirstDraw = true;
+    boolean isDmgHpDraw = false;;
     GameMap gameMap;
     private List<Spell> spellList = new ArrayList<Spell>();
     private List<Enemy> enemyList = new ArrayList<>();
@@ -97,9 +97,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
 
         //gameMap.draw(canvas); // Рисовать карту
         shop.drawMenu(canvas);
-        if (shop.getIsPressed()){
+        if (shop.getIsPressed() && isDmgHpDraw){
             shop.drawHPUP(canvas);
             shop.drawDMGUP(canvas);
+            shop.drawCloseMenu(canvas);
         }
         countable.drawCoins(canvas);
         countable.drawScore(canvas);
@@ -143,7 +144,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         while (enemyIterator.hasNext()){
             Enemy enemy = enemyIterator.next();
             if (Enemy.isColliding(enemy, player)){
-                player.setHP(enemy.getHp());
+                player.minHp(enemy.getHp());
                 enemyIterator.remove();
                 continue;
             }
@@ -152,7 +153,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 Spell spell = spellIterator.next();
                 if (Enemy.isSpellColliding(enemy, spell)){
                     enemy.setHp(player.getDmg());
-                    if (enemy.getHp() == 0){
+                    if (enemy.getHp() <= 0){
                         countable.setCoins(coins);
                         countable.setScore(score);
                         enemyIterator.remove();
@@ -214,8 +215,22 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                     Log.d("Screen touched: ", String.valueOf(player.x));
                 }
                 if (shop.menuIsPressed(event.getX(), event.getY())){
-                    Log.d("menu", String.valueOf(event.getX()));
+                    isDmgHpDraw = true;
                     shop.setIsPressed(true);
+                }
+                if (isDmgHpDraw){
+                    if (shop.closeMenuIsPressed(event.getX(), event.getY())){
+                        isDmgHpDraw = false;
+                        shop.setIsPressed(false);
+                    }
+                    if (shop.hpIsPressed(event.getX(), event.getY())){
+                        countable.minCoin(10);
+                        player.setHp(5);
+                    }
+                    if (shop.dmgIsPressed(event.getX(), event.getY())){
+                        countable.minCoin(10);
+                        player.setDmg(2);
+                    }
                 }
                 break;
             case MotionEvent.ACTION_MOVE:

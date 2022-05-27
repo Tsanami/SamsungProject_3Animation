@@ -21,12 +21,7 @@ public class Player extends GameObject{
     int hp = 10;
     int dmg = 1;
 
-    public int getDmg() {
-        return dmg;
-    }
-    public void setDmg(int dmg){
-        this.dmg += dmg;
-    }
+
 
     float k = 600f/30f; // velocity or koeff
     Paint jumpBtPaint = new Paint();
@@ -87,11 +82,19 @@ public class Player extends GameObject{
         return isPressed < jumpRadius;
     }
 
-
+    public int getDmg() {
+        return dmg;
+    }
+    public void setDmg(int dmg){
+        this.dmg += dmg;
+    }
     public int getHP() {
         return hp;
     }
-    public void setHP(int hp){
+    public void setHp(int hp){
+        this.hp +=hp;
+    }
+    public void minHp(int hp){
         this.hp -= hp;
     }
     public float getPosX() {
