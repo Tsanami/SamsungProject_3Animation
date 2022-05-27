@@ -17,8 +17,8 @@ public class Player extends GameObject{
     boolean isJump = false; // падать или нет
 //    Bitmap image = BitmapFactory.decodeResource(Game.res , R.drawable.idle1);
     float x, y, tX = 0, tY = 0;
-    float jumpX = 1850, jumpY = 650, jumpRadius = 76; // Параметры кнопки прыжка
-    int hp = 10;
+    float jumpX = 2050, jumpY = 650, jumpRadius = 76; // Параметры кнопки прыжка
+    int hp = 20;
     int dmg = 1;
 
 
@@ -67,11 +67,6 @@ public class Player extends GameObject{
         animator.draw(canvas);
         canvas.drawCircle(jumpX, jumpY, jumpRadius, jumpBtPaint);
 
-    }
-    public void drawGameOver(Canvas canvas, int hs, int ws){
-        Paint paint = new Paint();
-        paint.setColor(Color.RED);
-        canvas.drawText("Game Over", ws/2-100, hs/2, paint);
     }
 
     public void update() {

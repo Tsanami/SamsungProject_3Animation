@@ -6,6 +6,7 @@ import android.graphics.Paint;
 
 public class Shop {
     Paint paint = new Paint();
+    Paint textPaint = new Paint();
     int width;
     int height;
     int menuX;
@@ -54,20 +55,37 @@ public class Shop {
         return pressedOnCloseMenu < radius;
     }
     public void drawMenu(Canvas canvas){
+
         paint.setColor(Color.WHITE);
+        textPaint.setColor(Color.BLACK);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        textPaint.setTextSize(50);
         canvas.drawCircle(menuX, menuY, radius, paint);
+        canvas.drawText("Shop", menuX, menuY+15, textPaint);
     }
     public void drawDMGUP(Canvas canvas){
         paint.setColor(Color.RED);
+        textPaint.setColor(Color.BLACK);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        textPaint.setTextSize(25);
         canvas.drawCircle(dmgX,dmgY,radius,paint);
+        canvas.drawText("DMG UP: 10 C", dmgX, dmgY+10, textPaint);
     }
     public void drawHPUP(Canvas canvas){
         paint.setColor(Color.GREEN);
+        textPaint.setColor(Color.BLACK);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        textPaint.setTextSize(25);
         canvas.drawCircle(hpX,hpY,radius,paint);
+        canvas.drawText("HP UP: 10 C", hpX, hpY+10, textPaint);
     }
     public void drawCloseMenu(Canvas canvas){
         paint.setColor(Color.WHITE);
+        textPaint.setColor(Color.BLACK);
+        textPaint.setTextAlign(Paint.Align.CENTER);
+        textPaint.setTextSize(50);
         canvas.drawCircle(closeMenuX, closeMenuY, radius, paint);
+        canvas.drawText("Close", closeMenuX, closeMenuY+15, textPaint);
     }
 
     public void setIsPressed(boolean b) {

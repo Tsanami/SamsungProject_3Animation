@@ -14,8 +14,12 @@ public class GameOver {
     }
     public void drawGameOver(Canvas canvas, int ws, int hs){
         Paint paint = new Paint();
+        Paint restartPaint = new Paint();
         paint.setColor(Color.WHITE);
         paint.setTextSize(150);
+        restartPaint.setColor(Color.WHITE);
+        restartPaint.setTextSize(30);
         canvas.drawText("Game Over", ws/3, hs/2, paint);
+        canvas.drawText("Press anywhere to restart", ws/2-170, hs/2+100, restartPaint);
     }
 }
