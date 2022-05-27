@@ -1,8 +1,13 @@
 package com.example.samsungproject.gameobjects;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+
+import com.example.samsungproject.R;
 
 /*
 Джойстик, состоящий из двух кругов
@@ -27,8 +32,10 @@ public class Joystick {
     public double ctrlCoefX;
     public double ctrlCoefY;
 
+    Bitmap atkBut, bigJk, controller;
 
-    public Joystick(int circlePosX, int circlePosY, int bigCircleRad, int smallCircleRad){
+
+    public Joystick(int circlePosX, int circlePosY, int bigCircleRad, int smallCircleRad, Context context){
 
         this.bigRad = bigCircleRad;
         bigPosX = circlePosX;
@@ -43,11 +50,21 @@ public class Joystick {
         ctrlPaint = new Paint();
         ctrlPaint.setColor(Color.BLUE);
         ctrlPaint.setStyle(Paint.Style.FILL_AND_STROKE);
+
+        BitmapFactory.Options bitmapOptions = new BitmapFactory.Options();
+        bitmapOptions.inScaled = false;
+        atkBut = BitmapFactory.decodeResource(context.getResources(), R.drawable.attack_button_test, bitmapOptions);
+        bigJk = BitmapFactory.decodeResource(context.getResources(), R.drawable.big_joystick, bitmapOptions);
+        controller = BitmapFactory.decodeResource(context.getResources(), R.drawable.controller, bitmapOptions);
     }
 
-    public void draw(Canvas canvas) {
-        canvas.drawCircle(bigPosX, bigPosY, bigRad, bigPaint);
-        canvas.drawCircle(ctrlPosX, ctrlPosY, ctrlRad, ctrlPaint);
+    public void drawWalk(Canvas canvas) {
+        canvas.drawBitmap(bigJk, bigPosX-150, bigPosY-150, bigPaint);
+        canvas.drawBitmap(controller, ctrlPosX-50, ctrlPosY-50, bigPaint);
+    }
+    public void drawGun(Canvas canvas) {
+        canvas.drawBitmap(bigJk, bigPosX-150, bigPosY-150, bigPaint);
+        canvas.drawBitmap(atkBut, ctrlPosX-130, ctrlPosY-129, bigPaint);
     }
 
     // Проверка на нажатие джойстика
