@@ -15,14 +15,10 @@ public class Player extends GameObject{
 
     float jumpCount = 10; // прыжок игрока
     boolean isJump = false; // падать или нет
-//    Bitmap image = BitmapFactory.decodeResource(Game.res , R.drawable.idle1);
     float x, y, tX = 0, tY = 0;
-    float jumpX = 2050, jumpY = 650, jumpRadius = 76; // Параметры кнопки прыжка
+    float jumpX = 1750, jumpY = 650, jumpRadius = 76; // Параметры кнопки прыжка
     int hp = 20;
     int dmg = 1;
-
-
-
     float k = 600f/30f; // velocity or koeff
     Paint jumpBtPaint = new Paint();
     Joystick joystick;
@@ -66,7 +62,6 @@ public class Player extends GameObject{
     public void draw(Canvas canvas) {
         animator.draw(canvas);
         canvas.drawCircle(jumpX, jumpY, jumpRadius, jumpBtPaint);
-
     }
 
     public void update() {
@@ -84,6 +79,9 @@ public class Player extends GameObject{
 
     public int getDmg() {
         return dmg;
+    }
+    public void addDmg(int dmg){
+        this.dmg += dmg;
     }
     public void setDmg(int dmg){
         this.dmg += dmg;

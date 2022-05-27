@@ -31,9 +31,8 @@ public class Melee {
     }
 
     public void drawMelee(Canvas canvas){
-        canvas.drawCircle(x,y+100,meleeRad,paint);
-        canvas.drawBitmap(meleeCirclePNG, x-140,y-50,paint);
-        canvas.drawBitmap(meleePNG, x,y,paint);
+        canvas.drawCircle(x,y+275,meleeRad-50,paint);
+        canvas.drawBitmap(meleeCirclePNG, x-140,y+150,paint);
     }
 
     public void drawWeaponShifter(Canvas canvas){

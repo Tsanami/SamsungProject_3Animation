@@ -3,6 +3,7 @@ package com.example.samsungproject;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.util.DisplayMetrics;
@@ -41,6 +42,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     int coins=1;
     int score=1;
 
+    // Высчитывание кадров
+    private int updatesTime = 5;
+    private final int  MAX_UPDATES_PER_SECOND = 20;
+
+    private Melee melee;
+
+    private Bitmap weaponShifter;
+
     public Game(Context context) {
         super(context);
         getHolder().addCallback(this);
@@ -53,6 +62,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         gameLoop = new GameLoop(this, surfaceHolder);
 
         setFocusable(true);
+
     }
 
     @Override
@@ -88,17 +98,24 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             ws = getWidth();
             countable = new Countable();
             gameOver = new GameOver();
-            joystickWalk = new Joystick( ws/8, (int)(hs-(hs/5)), 140, 80);
-            joystickGun = new Joystick(ws - ws/4, (int)(hs-(hs/5)), 140, 80);
+            joystickWalk = new Joystick( ws/8, (int)(hs-(hs/5)), 140, 80, context);
+            joystickGun = new Joystick(ws - ws/4+50, (int)(hs-(hs/5)), 140, 80, context);
             shop = new Shop(ws, hs);
             player = new Player(context,ws / 2, (hs)-250, joystickWalk);
             isFirstDraw = false;
             DisplayMetrics displayMetrics = new DisplayMetrics();
             ((Activity) getContext()).getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            melee = new Melee(context, 1550, 550);
         }
 
         //gameMap.draw(canvas); // Рисовать карту
         if (gameOver.isPlayerAlive()){
+            if (melee.isMelee())
+                melee.drawMelee(canvas);
+            else
+                joystickGun.drawGun(canvas); // Рисовать джойстик для пушки
+            melee.drawWeaponShifter(canvas);
+
             shop.drawMenu(canvas);
             if (shop.getIsPressed() && isDmgHpDraw){
                 shop.drawHPUP(canvas);
@@ -115,8 +132,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             for (Enemy enemy: enemyList){
                 enemy.draw(canvas);
             }
-            joystickWalk.draw(canvas); // Рисовать джойстик для ходьбы
-            joystickGun.draw(canvas); // Рисовать джойстик для пушки
+            joystickWalk.drawWalk(canvas); // Рисовать джойстик для ходьбы
         }
         if (player.getHP()<=0){
             gameOver.setPlayerAlive(false);
@@ -135,7 +151,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             if (player.isJump) player.jump();
 
             while (numberOfSpellsToCast > 0){
-                spellList.add(new Spell(getContext(), player, touchX, touchY));
+                spellList.add(new Spell(getContext(), player, touchX, touchY, joystickGun));
                 numberOfSpellsToCast--;
             }
 
@@ -184,12 +200,11 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             case MotionEvent.ACTION_POINTER_DOWN:
                 if (player.jumpIsPressed(event.getX(1), event.getY(1)))
                     player.isJump = true; // Player's jump
-                if ((joystickWalk.getIsPressed()) && (!player.isJump)) {
-                    touchX = event.getX(1);
-                    touchY = event.getY(1);
-                    numberOfSpellsToCast++;
-                    Log.d("Screen touched: ", String.valueOf(player.x));
-                } else if (joystickWalk.isPressed(event.getX(1), event.getY(1))) {
+                if (melee.shifterIsPressed(event.getX(1), event.getY(1))&& (!melee.isMelee()))
+                    melee.setMelee(true);
+                else if (melee.shifterIsPressed(event.getX(1), event.getY(1)) && (melee.isMelee()))
+                    melee.setMelee(false);
+                if (joystickWalk.isPressed(event.getX(1), event.getY(1))) {
                     joystickWalk.setIsPressed(true);
                 }
                 if (joystickGun.isPressed(event.getX(1), event.getY(1))) {
@@ -197,28 +212,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 }
                 break;
             case MotionEvent.ACTION_DOWN:
-                if (player.jumpIsPressed(event.getX(), event.getY())) player.isJump = true;
-
-                if ((joystickWalk.getIsPressed())){
-                    touchX = event.getX();
-                    touchY = event.getY();
-                    numberOfSpellsToCast++;
-                    Log.d("Screen touched: ", String.valueOf(player.x));
-                }
-                else if (joystickWalk.isPressed(event.getX(), event.getY())){
-                    joystickWalk.setIsPressed(true);
-                    if (joystickWalk.getIsPressed() && !joystickGun.isFirst())
-                        joystickWalk.setIsFirst(true);
-                }else if (joystickGun.isPressed(event.getX(), event.getY())){
-                    joystickGun.setIsPressed(true);
-                    if (joystickGun.getIsPressed() && !joystickWalk.isFirst())
-                        joystickGun.setIsFirst(true);
-                }
-                else if (!player.isJump){
-                    touchX = event.getX();
-                    touchY = event.getY();
-                    numberOfSpellsToCast++;
-                    Log.d("Screen touched: ", String.valueOf(player.x));
+                if (!gameOver.isPlayerAlive()){
+                    gameOver.setPlayerAlive(true);
+                    player.setHp(20);
+                    player.setDmg(1);
                 }
                 if (shop.menuIsPressed(event.getX(), event.getY())){
                     isDmgHpDraw = true;
@@ -229,22 +226,54 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                         isDmgHpDraw = false;
                         shop.setIsPressed(false);
                     }
-                    if (shop.hpIsPressed(event.getX(), event.getY()) && countable.getCoins()>0){
+                    if (shop.hpIsPressed(event.getX(), event.getY()) && countable.getCoins()>=10){
                         countable.minCoin(10);
                         player.setHp(5);
                     }
-                    if (shop.dmgIsPressed(event.getX(), event.getY()) && countable.getCoins()>0){
+                    if (shop.dmgIsPressed(event.getX(), event.getY()) && countable.getCoins()>=10){
                         countable.minCoin(10);
                         player.setDmg(2);
                     }
                 }
+                if (player.jumpIsPressed(event.getX(), event.getY())) player.isJump = true;
+                if (melee.shifterIsPressed(event.getX(), event.getY()) && (!melee.isMelee())) melee.setMelee(true);
+                else if (melee.shifterIsPressed(event.getX(), event.getY()) && (melee.isMelee()))
+                    melee.setMelee(false);
+                if (joystickWalk.isPressed(event.getX(), event.getY())){
+                    joystickWalk.setIsPressed(true);
+                    if (joystickWalk.getIsPressed() && !joystickGun.isFirst())
+                        joystickWalk.setIsFirst(true);
+                }else if (joystickGun.isPressed(event.getX(), event.getY())){
+                    joystickGun.setIsPressed(true);
+                    if (joystickGun.getIsPressed() && !joystickWalk.isFirst())
+                        joystickGun.setIsFirst(true);
+                }
+                if (shop.menuIsPressed(event.getX(), event.getY())){
+                    shop.setIsPressed(true);
+                }
+
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (joystickGun.getIsPressed() && joystickGun.isFirst()){
-                    if (pointerCount==0)
+                if (joystickGun.getIsPressed() && joystickGun.isFirst() && !melee.isMelee()){
+                    if (pointerCount==0) {
                         moveGunJk(0, joystickGun.getIsPressed(), event);
+                        if (joystickGun.getIsPressed() && isTime()) {
+                            updatesTime = 0;
+                            touchX = event.getX();
+                            touchY = event.getY();
+                            numberOfSpellsToCast++;
+                        }
+                        updatesTime++;
+                    }
                     else if (joystickWalk.getIsPressed()){
                         moveGunJk(0, joystickGun.getIsPressed(), event);
+                        if (joystickGun.getIsPressed() && isTime()&& !melee.isMelee()) {
+                            updatesTime = 0;
+                            touchX = event.getX();
+                            touchY = event.getY();
+                            numberOfSpellsToCast++;
+                        }
+                        updatesTime++;
                         moveWalkJk(1, joystickWalk.getIsPressed(), event);
                     }
                 }
@@ -254,6 +283,13 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                     else if (joystickWalk.getIsPressed()){
                         moveWalkJk(0, joystickWalk.getIsPressed(), event);
                         moveGunJk(1, joystickGun.getIsPressed(), event);
+                        if (joystickGun.getIsPressed() && isTime()&& !melee.isMelee()) {
+                            updatesTime = 0;
+                            touchX = event.getX();
+                            touchY = event.getY();
+                            numberOfSpellsToCast++;
+                        }
+                        updatesTime++;
                     }
                 }
                 break;
@@ -261,6 +297,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 if (joystickGun.getIsPressed() && joystickGun.isFirst()){
                     if (pointerCount==0) {
                         joystickGun.clear();
+                        updatesTime=0;
                         break;
                     }
                 }
@@ -269,8 +306,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                     break;
                 }
                 break;
-
         }
+
         return true;
     }
 
@@ -283,7 +320,21 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         if (isPressed)
             joystickWalk.setCtrlCoef(e.getX(pointerId), e.getY(pointerId));
     }
+
+    public void weaponShifter(){
+
+    }
     public void pause() {
         gameLoop.stopLoop();
+    }
+    public boolean isTime(){
+        return updatesTime == MAX_UPDATES_PER_SECOND;
+    }
+
+    public int getGameWidth(){
+        return (int)ws;
+    }
+    public int getGameHeights(){
+        return (int)hs;
     }
 }
