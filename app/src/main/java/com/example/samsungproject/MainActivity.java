@@ -14,6 +14,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         game = new Game(this);
         setContentView(game);
+
     }
 
     @Override

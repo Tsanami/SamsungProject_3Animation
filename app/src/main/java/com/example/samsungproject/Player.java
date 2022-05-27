@@ -15,16 +15,21 @@ public class Player extends GameObject{
 
     float jumpCount = 10; // прыжок игрока
     boolean isJump = false; // падать или нет
-    Bitmap image = BitmapFactory.decodeResource(Game.res , R.drawable.idle1);
+//    Bitmap image = BitmapFactory.decodeResource(Game.res , R.drawable.idle1);
     float x, y, tX = 0, tY = 0;
-    float jumpX = 1750, jumpY = 450, jumpRadius = 76; // Параметры кнопки прыжка
-    public int MAX_HP = 10;
+    float jumpX = 1850, jumpY = 650, jumpRadius = 76; // Параметры кнопки прыжка
+    int hp = 10;
+    int dmg = 1;
+
+    public int getDmg() {
+        return dmg;
+    }
+    public void setDmg(int dmg){
+        this.dmg += dmg;
+    }
 
     float k = 600f/30f; // velocity or koeff
-    float hi, wi;//ширина и высота изображения
-    Paint paint;
     Paint jumpBtPaint = new Paint();
-    private int hp;
     Joystick joystick;
     private Animator animator;
 
@@ -36,8 +41,6 @@ public class Player extends GameObject{
         this.joystick = joystick;
         jumpBtPaint.setColor(Color.GRAY);
         animator = new Animator(context, this);
-
-        this.hp = MAX_HP;
     }
 
 
@@ -87,6 +90,9 @@ public class Player extends GameObject{
 
     public int getHP() {
         return hp;
+    }
+    public void setHP(int hp){
+        this.hp -= hp;
     }
     public float getPosX() {
         return x;

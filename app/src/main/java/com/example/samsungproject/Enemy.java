@@ -17,6 +17,14 @@ public class Enemy extends Circle {
     private static float updatesUntilSpawn = UPDATES_PER_SPAWN;
     private final Player player;
     float velocityX, velocityY;
+    int hp = 5;
+
+    public int getHp() {
+        return hp;
+    }
+    public void setHp(int hp){
+        this.hp -= hp;
+    }
 
     public Enemy(Context context, Player player) {
         super(context,

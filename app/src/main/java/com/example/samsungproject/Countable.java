@@ -27,10 +27,10 @@ public class Countable {
     }
 
     public void drawCoins(Canvas canvas){
-        canvas.drawText("Coins: "+String.valueOf(coins), 10, 25, paint);
+        canvas.drawText("Coins: "+String.valueOf(coins), 15, 65, paint);
     }
     public void drawScore(Canvas canvas){
-        canvas.drawText("Score: "+String.valueOf(score), 10, 65, paint);
+        canvas.drawText("Score: "+String.valueOf(score), 15, 105, paint);
     }
     public int getCoins(){ return coins;}
     public int getScore(){ return score;}
