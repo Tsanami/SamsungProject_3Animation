@@ -25,13 +25,14 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     private Joystick joystickGun; // Джойстик для оружия
     private Player player; // Игрок
     Countable countable;
+    GameOver gameOver;
     Shop shop;
-    Paint paint;
     public static Resources res;
     GameLoop gameLoop;
     int hs, ws;//ширина и высота области рисования
     boolean isFirstDraw = true;
-    boolean isDmgHpDraw = false;;
+    boolean isDmgHpDraw = false;
+    boolean playerAlive = true;
     GameMap gameMap;
     private List<Spell> spellList = new ArrayList<Spell>();
     private List<Enemy> enemyList = new ArrayList<>();
@@ -86,6 +87,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             hs = getHeight();
             ws = getWidth();
             countable = new Countable();
+            gameOver = new GameOver();
             joystickWalk = new Joystick( ws/8, (int)(hs-(hs/5)), 140, 80);
             joystickGun = new Joystick(ws - ws/4, (int)(hs-(hs/5)), 140, 80);
             shop = new Shop(ws, hs);
@@ -96,78 +98,82 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
         }
 
         //gameMap.draw(canvas); // Рисовать карту
-        shop.drawMenu(canvas);
-        if (shop.getIsPressed() && isDmgHpDraw){
-            shop.drawHPUP(canvas);
-            shop.drawDMGUP(canvas);
-            shop.drawCloseMenu(canvas);
+        if (gameOver.isPlayerAlive()){
+            shop.drawMenu(canvas);
+            if (shop.getIsPressed() && isDmgHpDraw){
+                shop.drawHPUP(canvas);
+                shop.drawDMGUP(canvas);
+                shop.drawCloseMenu(canvas);
+            }
+            countable.drawCoins(canvas);
+            countable.drawScore(canvas);
+            countable.drawHp(canvas, player);
+            player.draw(canvas); // Рисовать игрока
+            for (Spell spell: spellList) {
+                spell.draw(canvas);
+            }
+            for (Enemy enemy: enemyList){
+                enemy.draw(canvas);
+            }
+            joystickWalk.draw(canvas); // Рисовать джойстик для ходьбы
+            joystickGun.draw(canvas); // Рисовать джойстик для пушки
         }
-        countable.drawCoins(canvas);
-        countable.drawScore(canvas);
-
-        player.draw(canvas); // Рисовать игрока
-
-        for (Spell spell: spellList) {
-            spell.draw(canvas);
+        if (player.getHP()<=0){
+            gameOver.setPlayerAlive(false);
+            gameOver.drawGameOver(canvas, ws, hs);
         }
-        for (Enemy enemy: enemyList){
-            enemy.draw(canvas);
-        }
-        joystickWalk.draw(canvas); // Рисовать джойстик для ходьбы
-        joystickGun.draw(canvas); // Рисовать джойстик для пушки
-
-
         update();
     }
 
 
     public void update(){
-        player.update();
-        joystickWalk.update();
-        joystickGun.update();
+        if (gameOver.isPlayerAlive()){
+            player.update();
+            joystickWalk.update();
+            joystickGun.update();
 
-        if (player.isJump) player.jump();
+            if (player.isJump) player.jump();
 
-        while (numberOfSpellsToCast > 0){
-            spellList.add(new Spell(getContext(), player, touchX, touchY));
-            numberOfSpellsToCast--;
-        }
-
-        if (Enemy.readyToSpawn()){
-            enemyList.add(new Enemy(getContext(), player));
-        }
-        for (Enemy enemy: enemyList) {
-            enemy.update();
-        }
-
-        Iterator<Enemy> enemyIterator = enemyList.iterator();
-        while (enemyIterator.hasNext()){
-            Enemy enemy = enemyIterator.next();
-            if (Enemy.isColliding(enemy, player)){
-                player.minHp(enemy.getHp());
-                enemyIterator.remove();
-                continue;
+            while (numberOfSpellsToCast > 0){
+                spellList.add(new Spell(getContext(), player, touchX, touchY));
+                numberOfSpellsToCast--;
             }
-            Iterator<Spell> spellIterator = spellList.iterator();
-            while (spellIterator.hasNext()){
-                Spell spell = spellIterator.next();
-                if (Enemy.isSpellColliding(enemy, spell)){
-                    enemy.setHp(player.getDmg());
-                    if (enemy.getHp() <= 0){
-                        countable.setCoins(coins);
-                        countable.setScore(score);
-                        enemyIterator.remove();
+
+            if (Enemy.readyToSpawn()){
+                enemyList.add(new Enemy(getContext(), player));
+            }
+            for (Enemy enemy: enemyList) {
+                enemy.update();
+            }
+
+            Iterator<Enemy> enemyIterator = enemyList.iterator();
+            while (enemyIterator.hasNext()){
+                Enemy enemy = enemyIterator.next();
+                if (Enemy.isColliding(enemy, player)){
+                    player.minHp(enemy.getHp());
+                    enemyIterator.remove();
+                    continue;
+                }
+                Iterator<Spell> spellIterator = spellList.iterator();
+                while (spellIterator.hasNext()){
+                    Spell spell = spellIterator.next();
+                    if (Enemy.isSpellColliding(enemy, spell)){
+                        enemy.setHp(player.getDmg());
+                        if (enemy.getHp() <= 0){
+                            countable.setCoins(coins);
+                            countable.setScore(score);
+                            enemyIterator.remove();
+                        }
+                        Log.d("aaaa", "dadada");
+                        spellIterator.remove();
+                        break;
                     }
-                    Log.d("aaaa", "dadada");
-                    spellIterator.remove();
-                    break;
                 }
             }
+            for (Spell spell: spellList) {
+                spell.update();
+            }
         }
-        for (Spell spell: spellList) {
-            spell.update();
-        }
-
     }
 
     @Override
@@ -223,11 +229,11 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                         isDmgHpDraw = false;
                         shop.setIsPressed(false);
                     }
-                    if (shop.hpIsPressed(event.getX(), event.getY())){
+                    if (shop.hpIsPressed(event.getX(), event.getY()) && countable.getCoins()>0){
                         countable.minCoin(10);
                         player.setHp(5);
                     }
-                    if (shop.dmgIsPressed(event.getX(), event.getY())){
+                    if (shop.dmgIsPressed(event.getX(), event.getY()) && countable.getCoins()>0){
                         countable.minCoin(10);
                         player.setDmg(2);
                     }
@@ -280,12 +286,4 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     public void pause() {
         gameLoop.stopLoop();
     }
-
-    public int getGameWidth(){
-        return (int)ws;
-    }
-    public int getGameHeights(){
-        return (int)hs;
-    }
-
 }

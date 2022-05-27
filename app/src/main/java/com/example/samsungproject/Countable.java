@@ -32,6 +32,9 @@ public class Countable {
     public void drawScore(Canvas canvas){
         canvas.drawText("Score: "+String.valueOf(score), 15, 105, paint);
     }
+    public void drawHp(Canvas canvas, Player player){
+        canvas.drawText("HP: "+String.valueOf(player.getHP()), 15, 145, paint);
+    }
     public int getCoins(){ return coins;}
     public int getScore(){ return score;}
 }
