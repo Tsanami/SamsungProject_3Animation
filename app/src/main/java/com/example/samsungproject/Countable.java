@@ -15,11 +15,12 @@ public class Countable {
         paint.setTextSize(30);
     }
 
-    public void setCoins(int coins) {
+    public void setCoins(int coins){this.coins = coins;}
+    public void setScore(int score){this.score = score;}
+    public void addCoins(int coins) {
         this.coins += coins;
     }
-
-    public void setScore(int score) {
+    public void addScore(int score) {
         this.score += score;
     }
     public void minCoin(int bye){

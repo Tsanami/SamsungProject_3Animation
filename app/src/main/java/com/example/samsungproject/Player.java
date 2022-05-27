@@ -68,11 +68,6 @@ public class Player extends GameObject{
         canvas.drawCircle(jumpX, jumpY, jumpRadius, jumpBtPaint);
 
     }
-    public void drawGameOver(Canvas canvas, int hs, int ws){
-        Paint paint = new Paint();
-        paint.setColor(Color.RED);
-        canvas.drawText("Game Over", ws/2-100, hs/2, paint);
-    }
 
     public void update() {
         velX = (float)joystick.ctrlCoefX * k;

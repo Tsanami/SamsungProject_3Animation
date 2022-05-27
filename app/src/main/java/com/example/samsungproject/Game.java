@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Canvas;
-import android.graphics.Paint;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -117,16 +116,22 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             }
             joystickWalk.draw(canvas); // Рисовать джойстик для ходьбы
             joystickGun.draw(canvas); // Рисовать джойстик для пушки
+
+            update();
         }
         if (player.getHP()<=0){
+            countable.setCoins(0);
+            countable.setScore(0);
             gameOver.setPlayerAlive(false);
             gameOver.drawGameOver(canvas, ws, hs);
         }
-        update();
     }
 
 
     public void update(){
+        if (!gameOver.isPlayerAlive()){
+            enemyList.clear();
+        }
         if (gameOver.isPlayerAlive()){
             player.update();
             joystickWalk.update();
@@ -160,8 +165,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                     if (Enemy.isSpellColliding(enemy, spell)){
                         enemy.setHp(player.getDmg());
                         if (enemy.getHp() <= 0){
-                            countable.setCoins(coins);
-                            countable.setScore(score);
+                            countable.addCoins(coins);
+                            countable.addScore(score);
                             enemyIterator.remove();
                         }
                         Log.d("aaaa", "dadada");
@@ -179,7 +184,6 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         int pointerCount = event.getPointerCount()-1;
-
         switch(event.getActionMasked()) {
             case MotionEvent.ACTION_POINTER_DOWN:
                 if (player.jumpIsPressed(event.getX(1), event.getY(1)))
@@ -237,6 +241,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                         countable.minCoin(10);
                         player.setDmg(2);
                     }
+                }
+                if (!gameOver.isPlayerAlive()){
+                    gameOver.setPlayerAlive(true);
+                    player.setHp(10);
                 }
                 break;
             case MotionEvent.ACTION_MOVE:
