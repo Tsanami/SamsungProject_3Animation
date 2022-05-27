@@ -88,7 +88,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
             countable = new Countable();
             gameOver = new GameOver();
             joystickWalk = new Joystick( ws/8, (int)(hs-(hs/5)), 140, 80);
-            joystickGun = new Joystick(ws - ws/4, (int)(hs-(hs/5)), 140, 80);
+            joystickGun = new Joystick(ws - ws/6, (int)(hs-(hs/5)), 140, 80);
             shop = new Shop(ws, hs);
             player = new Player(context,ws / 2, (hs)-250, joystickWalk);
             isFirstDraw = false;
@@ -244,7 +244,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback {
                 }
                 if (!gameOver.isPlayerAlive()){
                     gameOver.setPlayerAlive(true);
-                    player.setHp(10);
+                    player.setHp(20);
                 }
                 break;
             case MotionEvent.ACTION_MOVE:

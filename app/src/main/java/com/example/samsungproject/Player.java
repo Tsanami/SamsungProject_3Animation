@@ -17,8 +17,8 @@ public class Player extends GameObject{
     boolean isJump = false; // падать или нет
 //    Bitmap image = BitmapFactory.decodeResource(Game.res , R.drawable.idle1);
     float x, y, tX = 0, tY = 0;
-    float jumpX = 1850, jumpY = 650, jumpRadius = 76; // Параметры кнопки прыжка
-    int hp = 10;
+    float jumpX = 2050, jumpY = 650, jumpRadius = 76; // Параметры кнопки прыжка
+    int hp = 20;
     int dmg = 1;
 
 
